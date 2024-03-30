@@ -1,0 +1,31 @@
+name: karsajobs-ui-ci # Nama workflow
+
+on:
+  push:
+    branches: [ "karsajobs-ui" ] # Branch yang akan dijalankan
+  workflow_dispatch:
+
+jobs:
+  lint-dockerfile:
+    runs-on: ubuntu-latest # OS yang digunakan
+    steps:
+    - name: Checkout repository # Mengambil repository
+      uses: actions/checkout@v2 # Menggunakan action checkout
+    - name: Install and run hadolint # Install hadolint dan menjalankan hadolint
+      # Menggunakan wget untuk mengunduh hadolint
+      run: |
+        sudo apt-get install -y wget
+        wget -O hadolint https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-x86_64
+        chmod +x hadolint
+        ./hadolint Dockerfile
+
+  build-app-karsajobs:
+    runs-on: ubuntu-latest # OS yang digunakan
+    steps:
+      - name: Checkout repository # Mengambil repository
+        uses: actions/checkout@v2 # Menggunakan action checkout
+      - name: Run build_push_image_karsajobs_ui.sh script # Menjalankan script build_push_image_karsajobs_ui.sh
+        env:
+            CR_PAT: ${{ secrets.CR_PAT }} # Menggunakan CR_PAT dari secrets
+        run: bash build_push_image_karsajobs_ui.sh # Menjalankan script build_push_image_karsajobs_ui.sh
+
